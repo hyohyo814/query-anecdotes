@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { getAnecs, updAnec } from '../requests';
-import { useNotifDispatch } from '../Context'
+import { useNotifDispatch } from '../Context';
 
 const Display = () => {
-  const dispatch = useNotifDispatch()
+  const dispatch = useNotifDispatch();
   const queryClient = useQueryClient();
   const updMutation = useMutation(updAnec, {
     onSuccess: () => {
@@ -13,7 +13,7 @@ const Display = () => {
 
   const handleVote = (anecdote) => () => {
     console.log('vote');
-    console.log(anecdote);
+    // console.log(anecdote);
     const newObj = {
       ...anecdote,
       votes: anecdote.votes + 1,
@@ -21,9 +21,12 @@ const Display = () => {
     // console.log(newObj);
     updMutation.mutate(newObj);
     dispatch({
-      type: 'VOTE',
-      payload: anecdote
-    })
+      type: 'NOTIF',
+      payload: `you voted ${anecdote.content}`,
+    });
+    setTimeout(() => {
+      dispatch({ type: 'MSG_RESET' });
+    }, 5000);
   };
 
   const result = useQuery('anecdotes', getAnecs, {
@@ -53,7 +56,8 @@ const Display = () => {
     </div>
   ));
 
-  return <>{list}</>;
+  return list
+
 };
 
-export default Display
+export default Display;

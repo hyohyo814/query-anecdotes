@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { isError } from 'react-query';
 
 const baseUrl = 'http://localhost:3001/anecdotes';
 

@@ -1,31 +1,38 @@
 import { useMutation, useQueryClient } from 'react-query';
 import { createAnec } from '../requests';
-import { useNotifDispatch } from '../Context'
+import { useNotifDispatch } from '../Context';
 
 const AnecdoteForm = () => {
-  const dispatch = useNotifDispatch()
-  const queryClient = useQueryClient()
+  const dispatch = useNotifDispatch();
+  const queryClient = useQueryClient();
   const newMutation = useMutation(createAnec, {
     onSuccess: (newObj) => {
-      const anecdotes = queryClient.getQueryData('anecdotes')
-      queryClient.setQueryData('anecdotes', anecdotes.concat(newObj))
+      const anecdotes = queryClient.getQueryData('anecdotes');
+      queryClient.setQueryData('anecdotes', anecdotes.concat(newObj));
     },
     onError: () => {
-      console.log('Content length must be greater than 5')
-    }
+      const lenInv = 'too short anecdote, must have length 5 or more';
+      dispatch({
+        type: 'NOTIF',
+        payload: lenInv,
+      });
+    },
   });
 
   const onCreate = (event) => {
     event.preventDefault();
     const content = event.target.anecdote.value;
-    console.log(content)
+    // console.log(content)
     event.target.anecdote.value = '';
     console.log('new anecdote');
     newMutation.mutate({ content, votes: 0 });
     dispatch({
-      type: 'NEW_POST',
-      payload: content
-    })
+      type: 'NOTIF',
+      payload: `${content} added`,
+    });
+    setTimeout(() => {
+      dispatch({ type: 'MSG_RESET' });
+    }, 5000);
   };
 
   return (
